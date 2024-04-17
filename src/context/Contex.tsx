@@ -1,9 +1,8 @@
-import React, {createContext, useEffect, useReducer, useState} from 'react';
+import React, {createContext, useEffect, useState} from 'react';
 import {View, useColorScheme} from 'react-native';
 import Toast from 'react-native-toast-message';
 import {itemProduc} from '../utils/Product/CardProduct';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Api from '../utils/api/Api';
 
 interface colores {
   backgroundColorComponents: string;
@@ -93,7 +92,6 @@ export default function Contex({children}: {children: React.ReactNode}) {
     setComi(e);
   };
   const setserver = async (e: string) => {
-    Api.defaults.baseURL = 'http://' + e + ':8000/api/';
     await AsyncStorage.setItem('ip', e);
     setIp(e);
   };

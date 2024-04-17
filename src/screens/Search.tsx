@@ -40,7 +40,7 @@ export default function Search(props: StackScreenProps<any, 'Search'>) {
           setLimit(response.data.last_page);
           setPage(page + 1);
         })
-        .catch(e => console.log(e.message));
+        .catch(e => console.error(e));
   };
 
   useEffect(() => {
@@ -86,11 +86,11 @@ export default function Search(props: StackScreenProps<any, 'Search'>) {
           placeholder="Producto"
           value={filter['producto']}
           onChangeText={value => {
+            filter['producto'] = value;
             clearTimeout(timerRef.current);
             timerRef.current = setTimeout(() => {
               filtrar();
             }, 400);
-            filter['producto'] = value;
           }}
           // onSubmitEditing={e => {
           //   filtrar();

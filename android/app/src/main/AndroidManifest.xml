@@ -3,7 +3,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Required -->
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.USB_PERMISSION" />
 
 
     <!-- Include this only if you are planning to use the camera roll -->
@@ -16,6 +15,7 @@
       android:name=".MainApplication"
       android:label="@string/app_name"
       android:icon="@mipmap/ic_launcher"
+      android:usesCleartextTraffic="true"
       android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="false"
       android:theme="@style/AppTheme">

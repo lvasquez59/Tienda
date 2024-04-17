@@ -1,4 +1,4 @@
-import {FlatList, NativeEventEmitter, NativeModules} from 'react-native';
+import {FlatList, ScrollView} from 'react-native';
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import {StackScreenProps} from '@react-navigation/stack';
 import {View} from '../components/View';
@@ -14,6 +14,7 @@ import {TextInput as TexRef} from 'react-native';
 import KeyEvent, {KeyEventProps} from 'react-native-keyevent';
 import {Keyboard} from 'react-native';
 import {Checkbox} from '../components/Checkbox';
+import {useWindowDimensions} from 'react-native';
 
 export default function Home(
   props: StackScreenProps<{Home?: {item?: itemProduc}}, 'Home'>,
@@ -26,19 +27,21 @@ export default function Home(
   const product = useRef<ProductComponentMethods | null>(null);
   const inputRef2 = useRef<TexRef>(null);
 
+  const layout = useWindowDimensions().width > useWindowDimensions().height;
   const timerRef = useRef<any>(null);
 
   let pressedKey = '';
   useEffect(() => {
     KeyEvent.onKeyUpListener((keyEvent: KeyEventProps) => {
-      // console.warn((pressedKey = pressedKey + keyEvent.pressedKey));
-
-      clearTimeout(timerRef.current);
-      timerRef.current = setTimeout(() => {
-        !props.navigation.isFocused() && props.navigation.navigate('Home');
-        buscar(pressedKey);
-        pressedKey = '';
-      }, 200);
+      if (Keyboard.isVisible()) {
+        pressedKey = pressedKey + keyEvent.pressedKey;
+        clearTimeout(timerRef.current);
+        timerRef.current = setTimeout(() => {
+          !props.navigation.isFocused() && props.navigation.navigate('Home');
+          buscar(pressedKey);
+          pressedKey = '';
+        }, 200);
+      }
     });
   }, []);
 
@@ -133,15 +136,15 @@ export default function Home(
       <View.Bbg
         style={{
           // justifyContent: 'center',
-          alignItems: 'center',
-          flexDirection: 'row',
+          alignItems: layout ? 'center' : 'baseline',
+          flexDirection: layout ? 'row' : 'column',
         }}>
         <Product ref={product} />
         <View
           style={{
-            marginHorizontal: 5,
-            width: '73%',
-            height: '97%',
+            marginHorizontal: layout ? 5 : 0,
+            width: layout ? '73%' : '100%',
+            height: layout ? '97%' : '70%',
             borderWidth: 1,
             borderColor: colores.backgroundColorComponents,
             borderRadius: 20,
@@ -177,8 +180,8 @@ export default function Home(
         </View>
         <View
           style={{
-            width: '25%',
-            height: '97%',
+            width: layout ? '25%' : '100%',
+            height: layout ? '97%' : '30%',
             alignItems: 'center',
           }}>
           {scan && (
@@ -205,72 +208,51 @@ export default function Home(
               borderWidth: 1,
               borderColor: colores.backgroundColorComponents,
               borderRadius: 20,
-              alignItems: 'center',
+              // alignItems: 'center',
               // flexDirection: 'row',
-              paddingBottom: 20,
-              justifyContent: 'space-between',
+              paddingBottom: 10,
               // width: '100%',
             }}>
-            <Text
-              style={{
-                fontWeight: 'bold',
-                marginLeft: 15,
-                fontSize: 20,
-                textAlign: 'center',
-              }}>
-              Detalles
-            </Text>
-            <View>
-              <View
+              <Text
                 style={{
-                  justifyContent: 'space-between',
-                  width: '88%',
-                  marginBottom: 10,
+                  fontWeight: 'bold',
+                  marginLeft: 15,
+                  fontSize: 20,
+                  textAlign: 'center',
                 }}>
-                <Text
-                  style={{
-                    fontSize: 20,
-                  }}>
-                  Tipo de pago:{' '}
-                </Text>
+                Detalles
+              </Text>
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ alignItems:'center',justifyContent: 'space-between', }}>
+              <View>
                 <View
                   style={{
-                    flexDirection: 'row',
                     justifyContent: 'space-between',
-                    width: '100%',
+                    width: layout?'88%':'100%',
+                    marginBottom: 10,
                   }}>
-                  <Checkbox
-                    text="Efectivo"
-                    value={pago == 0}
-                    onChangeValue={() => setPago(0)}></Checkbox>
-                  <Checkbox
-                    text="Tarjeta"
-                    value={pago == 1}
-                    onChangeValue={() => setPago(1)}></Checkbox>
+                  <Text
+                    style={{
+                      fontSize: 20,
+                    }}>
+                    Tipo de pago:{' '}
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      width: layout ?'100%':'88%',
+                    }}>
+                    <Checkbox
+                      text="Efectivo"
+                      value={pago == 0}
+                      onChangeValue={() => setPago(0)}></Checkbox>
+                    <Checkbox
+                      text="Tarjeta"
+                      value={pago == 1}
+                      onChangeValue={() => setPago(1)}></Checkbox>
+                  </View>
                 </View>
-              </View>
 
-              <View
-                style={{
-                  justifyContent: 'space-between',
-                  width: '88%',
-                  flexDirection: 'row',
-                }}>
-                <Text
-                  style={{
-                    fontSize: 20,
-                  }}>
-                  Productos:{' '}
-                </Text>
-                <Text
-                  style={{
-                    fontWeight: 'bold',
-                    fontSize: 20,
-                  }}>
-                  {items}
-                </Text>
-              </View>
-              {pago == 1 && (
                 <View
                   style={{
                     justifyContent: 'space-between',
@@ -281,43 +263,65 @@ export default function Home(
                     style={{
                       fontSize: 20,
                     }}>
-                    Comision:{' '}
+                    Productos:{' '}
                   </Text>
                   <Text
                     style={{
                       fontWeight: 'bold',
                       fontSize: 20,
                     }}>
-                    ${(total * Number(comision)).toFixed(1)}
+                    {items}
                   </Text>
                 </View>
-              )}
+                {pago == 1 && (
+                  <View
+                    style={{
+                      justifyContent: 'space-between',
+                      width: '88%',
+                      flexDirection: 'row',
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: 20,
+                      }}>
+                      Comision:{' '}
+                    </Text>
+                    <Text
+                      style={{
+                        fontWeight: 'bold',
+                        fontSize: 20,
+                      }}>
+                      ${(total * Number(comision)).toFixed(1)}
+                    </Text>
+                  </View>
+                )}
 
-              <View
-                style={{
-                  justifyContent: 'space-between',
-                  width: '88%',
-                  flexDirection: 'row',
-                }}>
-                <Text
+                <View
                   style={{
-                    fontSize: 20,
+                    justifyContent: 'space-between',
+                    width: '88%',
+                    flexDirection: 'row',
                   }}>
-                  Total:{' '}
-                </Text>
-                <Text
-                  style={{
-                    fontWeight: 'bold',
-                    fontSize: 20,
-                  }}>
-                  $
-                  {(total + (pago == 1 ? total * Number(comision) : 0)).toFixed(
-                    1,
-                  )}
-                </Text>
+                  <Text
+                    style={{
+                      fontSize: 20,
+                    }}>
+                    Total:{' '}
+                  </Text>
+                  <Text
+                    style={{
+                      fontWeight: 'bold',
+                      fontSize: 20,
+                    }}>
+                    $
+                    {(
+                      total + (pago == 1 ? total * Number(comision) : 0)
+                    ).toFixed(1)}
+                  </Text>
+                </View>
               </View>
-            </View>
-            <Button text="Cobrar" style={{width: '90%'}} onPress={ventas} />
+              </ScrollView>
+              <Button text="Cobrar" style={{ width: '90%',alignSelf:'center' }} onPress={ventas} />
           </View>
         </View>
       </View.Bbg>

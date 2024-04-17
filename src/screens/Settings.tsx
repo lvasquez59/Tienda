@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext} from 'react';
 import {View} from '../components/View';
 import {Text} from '../components/Text';
 import {Checkbox} from '../components/Checkbox';
@@ -26,6 +26,7 @@ export default function Settings() {
       <KeyboardAvoidingView>
         <ScrollView>
           <Text>Tema:</Text>
+          <View style={{ flexDirection:'row', justifyContent:'space-between',marginVertical:15 }}>
           <Checkbox
             text="System"
             value={colorScheme == temaApp.Sistem}
@@ -38,11 +39,18 @@ export default function Settings() {
             text="Oscuro"
             value={colorScheme == temaApp.Oscuro}
             onChangeValue={() => SetTem(temaApp.Oscuro)}></Checkbox>
+          </View>
+          <View
+            style={{ flexDirection:'row',justifyContent: 'space-between',alignItems: 'center', marginVertical:15}}
+          >
+          <Text>Boton Scaner:
 
-          <Text>Boton Scaner:</Text>
+          </Text>
           <Switch value={scan} onValueChange={SetScaner}></Switch>
+          </View>
           <TextInput
             label="Comision"
+            containerInputStyle={{ width:'100%', marginVertical:15}}
             enteros
             editable={false}
             value={(Number(comision) * 100).toString()}
@@ -51,6 +59,7 @@ export default function Settings() {
           />
           <TextInput
             label="Servidor"
+            containerInputStyle={{ width:'100%', marginVertical:15}}
             value={ip}
             placeholder="IP"
             onChangeText={setserver}
