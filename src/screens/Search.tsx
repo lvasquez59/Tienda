@@ -92,12 +92,6 @@ export default function Search(props: StackScreenProps<any, 'Search'>) {
               filtrar();
             }, 400);
           }}
-          // onSubmitEditing={e => {
-          //   filtrar();
-          //   // 'clear' in e.currentTarget &&
-          //   //   typeof e.currentTarget.clear == 'function' &&
-          //   //   e.currentTarget.clear();
-          // }}
           onScanned={filtrar}
           containerInputStyle={{marginRight: 10}}
           blurOnSubmit={false}
@@ -154,7 +148,7 @@ export default function Search(props: StackScreenProps<any, 'Search'>) {
             item={item}
             onPress={item => product.current?.show({i: item})}
             onPressAdd={item => {
-              props.navigation.navigate('Home', {item: item});
+              props.navigation.navigate('Home', {item: {...item, unidad: 1}});
             }}
           />
         )}

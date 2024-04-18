@@ -33,7 +33,7 @@ export default function Home(
   let pressedKey = '';
   useEffect(() => {
     KeyEvent.onKeyUpListener((keyEvent: KeyEventProps) => {
-      if (Keyboard.isVisible()) {
+      if (!Keyboard.isVisible()) {
         pressedKey = pressedKey + keyEvent.pressedKey;
         clearTimeout(timerRef.current);
         timerRef.current = setTimeout(() => {
@@ -49,6 +49,7 @@ export default function Home(
     setItems(data.reduce((a, c) => a + (c.unidad ?? 1), 0));
     setTotal(data.reduce((a, c) => a + (c.total ?? 0), 0));
   }, [data]);
+
   useEffect(
     () =>
       setData(data => {
@@ -114,6 +115,8 @@ export default function Home(
   };
 
   const ventas = () => {
+    console.log(data);
+
     Api.post('ventas/', {
       total_venta: total,
       total_producto: data.reduce((a, c) => a + (c.unidad ?? 1), 0),
@@ -135,7 +138,6 @@ export default function Home(
       </View>
       <View.Bbg
         style={{
-          // justifyContent: 'center',
           alignItems: layout ? 'center' : 'baseline',
           flexDirection: layout ? 'row' : 'column',
         }}>
@@ -213,21 +215,26 @@ export default function Home(
               paddingBottom: 10,
               // width: '100%',
             }}>
-              <Text
-                style={{
-                  fontWeight: 'bold',
-                  marginLeft: 15,
-                  fontSize: 20,
-                  textAlign: 'center',
-                }}>
-                Detalles
-              </Text>
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ alignItems:'center',justifyContent: 'space-between', }}>
+            <Text
+              style={{
+                fontWeight: 'bold',
+                marginLeft: 15,
+                fontSize: 20,
+                textAlign: 'center',
+              }}>
+              Detalles
+            </Text>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}>
               <View>
                 <View
                   style={{
                     justifyContent: 'space-between',
-                    width: layout?'88%':'100%',
+                    width: layout ? '88%' : '100%',
                     marginBottom: 10,
                   }}>
                   <Text
@@ -240,7 +247,7 @@ export default function Home(
                     style={{
                       flexDirection: 'row',
                       justifyContent: 'space-between',
-                      width: layout ?'100%':'88%',
+                      width: layout ? '100%' : '88%',
                     }}>
                     <Checkbox
                       text="Efectivo"
@@ -320,8 +327,12 @@ export default function Home(
                   </Text>
                 </View>
               </View>
-              </ScrollView>
-              <Button text="Cobrar" style={{ width: '90%',alignSelf:'center' }} onPress={ventas} />
+            </ScrollView>
+            <Button
+              text="Cobrar"
+              style={{width: '90%', alignSelf: 'center'}}
+              onPress={ventas}
+            />
           </View>
         </View>
       </View.Bbg>

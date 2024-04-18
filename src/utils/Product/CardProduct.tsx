@@ -29,12 +29,16 @@ export default function CardProduct({
 }) {
   const {colores} = useContext(contex);
   useEffect(() => {
-    item.total = Number(item.costo);
+    item.unidad = item.unidad ?? 1;
+    item.total = Number(item.costo) * Number(item.unidad);
   }, []);
+  useEffect(() => {
+    item.total = Number(item.costo) * Number(item.unidad);
+    onChangeTotal && onChangeTotal();
+  }, [item.unidad, item.costo]);
   return (
     <View
       style={{
-        // borderWidth: 1,
         borderBottomWidth: 1,
         borderColor: colores.backgroundColorComponents,
         borderRadius: 10,
@@ -42,15 +46,14 @@ export default function CardProduct({
         marginTop: 10,
         paddingHorizontal: 20,
         width: '100%',
-        height: 100,
+        height: 105,
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
       }}>
       <View
         style={{
-          width: '30%',
-          // justifyContent: 'center',
+          width: '35%',
         }}>
         <View>
           <Text
@@ -80,12 +83,13 @@ export default function CardProduct({
           name="cantidad"
           placeholder="1"
           onChangeText={e => {
-            item.total = Number(e) * Number(item.costo);
             item.unidad = Number(e);
-            onChangeTotal();
+            item.total = Number(item.costo) * Number(item.unidad ?? 1);
+
+            onChangeTotal && onChangeTotal();
           }}
           value={(item.unidad || 1).toString()}
-          containerInputStyle={{flex: 1 / 3}}
+          containerInputStyle={{flex: 1 / 2.5}}
         />
       ) : (
         <View
@@ -99,7 +103,7 @@ export default function CardProduct({
               fontWeight: 'bold',
               fontSize: 20,
             }}>
-            Costo: ${item.total ?? item.costo}
+            Costo: ${item.costo}
           </Text>
           {/* <Text>
             Cantidad: <Text>{item.cantidad}</Text>
@@ -112,14 +116,20 @@ export default function CardProduct({
           justifyContent: 'space-around',
         }}>
         {onChangeTotal ? (
-          <Text
-            style={{
-              textAlignVertical: 'center',
-              fontWeight: 'bold',
-              fontSize: 20,
-            }}>
-            ${item.total ?? item.costo}
-          </Text>
+          <>
+            <Text
+              style={{
+                textAlignVertical: 'center',
+                fontWeight: 'bold',
+                fontSize: 20,
+                textAlign: 'center',
+              }}>
+              ${item.total ?? item.costo}
+            </Text>
+            <Text style={{textAlign: 'center', fontSize: 15}}>
+              ${item.costo}
+            </Text>
+          </>
         ) : (
           <AntDesign
             name={'plus'}
@@ -137,7 +147,6 @@ export default function CardProduct({
           onPress={() => {
             item.total = 0;
             onPress(item);
-            // onChangeTotal && onChangeTotal();
           }}
         />
       </View>

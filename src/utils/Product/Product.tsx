@@ -62,7 +62,7 @@ export const Product = forwardRef<ProductComponentMethods>(function (
       Api.patch('producto/' + item.id_producto, item)
         .then(response => {
           Toast.show({text1: 'Actualizado correctamente'});
-          setActions({type: type.update, item: {...item, ...item}});
+          setActions({type: type.update, item: item});
           dimis();
         })
         .catch(err => console.log(err));
