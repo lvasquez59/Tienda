@@ -147,9 +147,9 @@ export default function Search(props: StackScreenProps<any, 'Search'>) {
           <CardProduct
             item={item}
             onPress={item => product.current?.show({i: item})}
-            onPressAdd={item => {
-              props.navigation.navigate('Home', {item: {...item, unidad: 1}});
-            }}
+            onPressAdd={item =>
+              props.navigation.navigate('Home', {item: {...item, unidad: 1}})
+            }
           />
         )}
         style={{

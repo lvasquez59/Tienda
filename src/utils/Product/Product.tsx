@@ -45,10 +45,12 @@ export const Product = forwardRef<ProductComponentMethods>(function (
   };
   const dimis = () => setVisible(false);
   const delet = () => {
-    Api.delete('producto/' + item.id_producto).then(response => {
-      Toast.show({text1: 'Eliminado correctamente'});
-      dimis();
-    });
+    Api.delete('producto/' + item.id_producto)
+      .then(response => {
+        Toast.show({text1: 'Eliminado correctamente'});
+        dimis();
+      })
+      .catch(err => console.log(err.response));
     setActions({type: type.delete, item: item});
   };
 

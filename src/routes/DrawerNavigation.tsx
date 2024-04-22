@@ -8,10 +8,12 @@ import {
   createDrawerNavigator,
 } from '@react-navigation/drawer';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {useWindowDimensions} from 'react-native';
 import Settings from '../screens/Settings';
 import Home from '../screens/Home';
-import Login from '../screens/Login';
+import Pesado from '../screens/Pesado';
+import Ventas from '../screens/Ventas';
 
 const Drawer = createDrawerNavigator();
 
@@ -38,10 +40,31 @@ export function DrawerNavigator() {
       <Drawer.Screen
         name="Search"
         options={{
+          drawerLabel: 'Buscar',
           headerShown: false,
           drawerIcon: () => <AntDesign name="search1" size={16} color="red" />,
         }}
         component={Search}
+      />
+      <Drawer.Screen
+        name="Pesado"
+        options={{
+          headerShown: false,
+          drawerIcon: () => (
+            <FontAwesome name="balance-scale" size={16} color="red" />
+          ),
+        }}
+        component={Pesado}
+      />
+      <Drawer.Screen
+        name="Ventas"
+        options={{
+          headerShown: false,
+          drawerIcon: () => (
+            <AntDesign name="shoppingcart" size={16} color="red" />
+          ),
+        }}
+        component={Ventas}
       />
       <Drawer.Screen
         name="Settings"

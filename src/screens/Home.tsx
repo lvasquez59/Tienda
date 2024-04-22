@@ -15,6 +15,7 @@ import KeyEvent, {KeyEventProps} from 'react-native-keyevent';
 import {Keyboard} from 'react-native';
 import {Checkbox} from '../components/Checkbox';
 import {useWindowDimensions} from 'react-native';
+import {Reloj} from '../components/Reloj';
 
 export default function Home(
   props: StackScreenProps<{Home?: {item?: itemProduc}}, 'Home'>,
@@ -32,15 +33,15 @@ export default function Home(
 
   let pressedKey = '';
   useEffect(() => {
-    KeyEvent.onKeyUpListener((keyEvent: KeyEventProps) => {
+    KeyEvent.onKeyDownListener((keyEvent: KeyEventProps) => {
       if (!Keyboard.isVisible()) {
         pressedKey = pressedKey + keyEvent.pressedKey;
         clearTimeout(timerRef.current);
         timerRef.current = setTimeout(() => {
           !props.navigation.isFocused() && props.navigation.navigate('Home');
-          buscar(pressedKey);
+          pressedKey.length > 1 && buscar(pressedKey);
           pressedKey = '';
-        }, 200);
+        }, 50);
       }
     });
   }, []);
@@ -186,7 +187,7 @@ export default function Home(
             height: layout ? '97%' : '30%',
             alignItems: 'center',
           }}>
-          {scan && (
+          {scan ? (
             <TextInput
               scanned
               ref={inputRef2}
@@ -201,6 +202,8 @@ export default function Home(
               blurOnSubmit={false}
               containerInputStyle={{width: '100%'}}
             />
+          ) : (
+            <Reloj />
           )}
           <View
             style={{

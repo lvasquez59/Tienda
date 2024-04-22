@@ -4,6 +4,7 @@ import {Text} from '../../components/Text';
 import {View} from '../../components/View';
 import {contex} from '../../context/Contex';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import {Detalles} from '../Ventas/CardVenta';
 
 export interface itemProduc {
   id_producto?: string;
@@ -18,24 +19,35 @@ export interface itemProduc {
 
 export default function CardProduct({
   item,
+  detalle,
   onChangeTotal,
   onPress,
   onPressAdd,
 }: {
   item: itemProduc;
+  detalle?: Detalles;
   onChangeTotal?: () => void;
   onPress: (item: itemProduc) => void;
   onPressAdd?: (item: itemProduc) => void;
 }) {
   const {colores} = useContext(contex);
+  const [pesado, setPesado] = useState<number>(
+    item.codigo.match('^[0-9]') ? 1 : 1000,
+  );
   useEffect(() => {
     item.unidad = item.unidad ?? 1;
-    item.total = Number(item.costo) * Number(item.unidad);
+    if (item.codigo.match('^[0-9]'))
+      item.total = Number(item.costo) * Number(item.unidad ?? 1);
+    else item.total = (pesado * Number(item.costo)) / 1000;
   }, []);
+
   useEffect(() => {
-    item.total = Number(item.costo) * Number(item.unidad);
+    if (item.codigo.match('^[0-9]'))
+      item.total = Number(item.costo) * Number(item.unidad ?? 1);
+    else item.total = (pesado * Number(item.costo)) / 1000;
     onChangeTotal && onChangeTotal();
   }, [item.unidad, item.costo]);
+
   return (
     <View
       style={{
@@ -65,7 +77,7 @@ export default function CardProduct({
             {item.producto}
           </Text>
           <Text style={{fontSize: 15}} selectable>
-            {item.codigo}
+            {item.codigo.match('^[0-9]') ? item.codigo : 'Pesado'}
           </Text>
         </View>
 
@@ -77,18 +89,24 @@ export default function CardProduct({
       </View>
       {onChangeTotal ? (
         <TextInput
-          editable={false}
+          editable={item.codigo.match('^[0-9]') ? false : true}
           isRequired
           enteros
           name="cantidad"
           placeholder="1"
           onChangeText={e => {
-            item.unidad = Number(e);
-            item.total = Number(item.costo) * Number(item.unidad ?? 1);
+            if (item.codigo.match('^[0-9]')) {
+              item.unidad = Number(e);
+              item.total = Number(item.costo) * Number(item.unidad ?? 1);
+            } else {
+              setPesado(Number(e));
+              item.unidad = 1;
+              item.total = (Number(e) * Number(item.costo)) / 1000;
+            }
 
             onChangeTotal && onChangeTotal();
           }}
-          value={(item.unidad || 1).toString()}
+          value={pesado.toString()}
           containerInputStyle={{flex: 1 / 2.5}}
         />
       ) : (
@@ -96,6 +114,7 @@ export default function CardProduct({
           style={{
             alignItems: 'center',
             justifyContent: 'center',
+            height: '100%',
           }}>
           <Text
             style={{
@@ -111,45 +130,66 @@ export default function CardProduct({
         </View>
       )}
 
-      <View
-        style={{
-          justifyContent: 'space-around',
-        }}>
-        {onChangeTotal ? (
-          <>
-            <Text
-              style={{
-                textAlignVertical: 'center',
-                fontWeight: 'bold',
-                fontSize: 20,
-                textAlign: 'center',
-              }}>
-              ${item.total ?? item.costo}
-            </Text>
-            <Text style={{textAlign: 'center', fontSize: 15}}>
-              ${item.costo}
-            </Text>
-          </>
-        ) : (
+      {!detalle ? (
+        <View
+          style={{
+            justifyContent: 'space-around',
+          }}>
+          {onChangeTotal ? (
+            <>
+              <Text
+                style={{
+                  textAlignVertical: 'center',
+                  fontWeight: 'bold',
+                  fontSize: 20,
+                  textAlign: 'center',
+                }}>
+                ${item.total ?? item.costo}
+              </Text>
+              <Text style={{textAlign: 'center', fontSize: 15}}>
+                ${item.costo}
+              </Text>
+            </>
+          ) : (
+            <AntDesign
+              name={'plus'}
+              size={30}
+              color={colores.backgroundColorComponents}
+              onPress={() => {
+                onPressAdd && onPressAdd(item);
+              }}
+            />
+          )}
           <AntDesign
-            name={'plus'}
+            name={onChangeTotal ? 'close' : 'form'}
             size={30}
             color={colores.backgroundColorComponents}
             onPress={() => {
-              onPressAdd && onPressAdd(item);
+              item.total = 0;
+              onPress(item);
             }}
           />
-        )}
-        <AntDesign
-          name={onChangeTotal ? 'close' : 'form'}
-          size={30}
-          color={colores.backgroundColorComponents}
-          onPress={() => {
-            item.total = 0;
-            onPress(item);
-          }}
-        />
-      </View>
+        </View>
+      ) : (
+        <Text
+          style={{
+            textAlignVertical: 'center',
+            fontWeight: 'bold',
+            fontSize: 20,
+          }}>
+          Cantidad: {detalle.cantidad}
+        </Text>
+      )}
+      {detalle && (
+        <Text
+          style={{
+            textAlignVertical: 'center',
+            fontWeight: 'bold',
+            fontSize: 20,
+          }}>
+          total: ${detalle.total}
+        </Text>
+      )}
     </View>
   );
 }
